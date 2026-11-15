@@ -26,15 +26,33 @@ p {
   margin: 9px 0;
 }
 
-.status {
+#status {
   min-height: 1.1em;
+  margin: 10px 0 0;
   color: #555;
 }
 
-.status[data-type="error"] {
+#status[data-type="error"] {
   color: #a00000;
 }
 
-.selected {
-  margin-top: 14px;
+#info {
+  margin-top: 18px;
+}
+
+.row strong {
+  font-weight: normal;
+}
+
+.flag {
+  display: block;
+  width: 100%;
+  max-width: 320px;
+  height: auto;
+  margin-top: 12px;
+  border: 1px solid #999;
+}
+
+[hidden] {
+  display: none !important;
 }

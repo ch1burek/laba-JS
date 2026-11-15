@@ -15,7 +15,16 @@
     </select>
 
     <p id="status" class="status" role="status" aria-live="polite"></p>
-    <p id="selected" class="selected"></p>
+
+    <section id="info" class="info" hidden>
+      <p class="row"><span>Країна:</span> <strong id="cName"></strong></p>
+      <p class="row"><span>Столиця:</span> <strong id="cCapital"></strong></p>
+      <p class="row"><span>Населення:</span> <strong id="cPopulation"></strong></p>
+      <p class="row"><span>Регіон:</span> <strong id="cRegion"></strong></p>
+      <p class="row"><span>Площа:</span> <strong id="cArea"></strong></p>
+      <p class="row"><span>Валюта:</span> <strong id="cCurrency"></strong></p>
+      <img id="cFlag" class="flag" alt="" hidden>
+    </section>
   </main>
 
   <script src="script.js"></script>
