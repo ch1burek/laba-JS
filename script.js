@@ -1,24 +1,29 @@
+// Адреси API та резервного набору даних
 const API = "https://restcountries.com/v3.1";
 const DATA =
   "https://cdn.jsdelivr.net/gh/restcountries/restcountries@master/src/main/resources/countriesV3.1.json";
 const FIELDS = "name,capital,population,flags,region,area,currencies";
 
-const select = document.getElementById("countrySelect");
-const statusEl = document.getElementById("status");
-const infoEl = document.getElementById("info");
-
+// Елементи сторінки
+const $ = (id) => document.getElementById(id);
+const select = $("countrySelect");
+const form = $("countryForm");
+const showButton = $("showBtn");
+const statusEl = $("status");
+const infoEl = $("info");
 const out = {
-  name: document.getElementById("cName"),
-  capital: document.getElementById("cCapital"),
-  population: document.getElementById("cPopulation"),
-  region: document.getElementById("cRegion"),
-  area: document.getElementById("cArea"),
-  currency: document.getElementById("cCurrency"),
-  flag: document.getElementById("cFlag"),
+  name: $("cName"),
+  capital: $("cCapital"),
+  population: $("cPopulation"),
+  region: $("cRegion"),
+  area: $("cArea"),
+  currency: $("cCurrency"),
+  flag: $("cFlag"),
 };
 
 let cache = null;
 
+// Показати повідомлення (порожній текст очищає його)
 function setStatus(text, type = "info") {
   statusEl.textContent = text;
   statusEl.dataset.type = type;
@@ -30,6 +35,7 @@ async function getJSON(url) {
   return response.json();
 }
 
+// Резервний набір даних завантажується один раз
 function dataset() {
   if (!cache) {
     cache = getJSON(DATA)
@@ -47,6 +53,7 @@ function dataset() {
   return cache;
 }
 
+// Перелік країн: основний API, інакше — резервний набір
 async function getCountries() {
   try {
     const data = await getJSON(API + "/all?fields=name");
@@ -55,6 +62,7 @@ async function getCountries() {
   return dataset();
 }
 
+// Дані країни: основний API, інакше — пошук у резервному наборі
 async function getCountry(name) {
   try {
     const data = await getJSON(
@@ -66,6 +74,7 @@ async function getCountry(name) {
   return data.find((c) => c.name.common === name || c.name.official === name);
 }
 
+// Вивести дані країни на сторінку
 function render(country) {
   const name = country.name?.common || "—";
   out.name.textContent = name;
@@ -97,42 +106,41 @@ function render(country) {
   infoEl.hidden = false;
 }
 
+// Заповнити список країн
 function fillSelect(countries) {
   const options = [...countries]
     .sort((a, b) => a.name.common.localeCompare(b.name.common, "en"))
     .map((c) => new Option(c.name.common, c.name.common));
-
   select.replaceChildren(new Option("Оберіть країну…", ""), ...options);
 }
 
-async function handleSelection() {
-  const name = select.value;
-
-  if (!name) {
-    infoEl.hidden = true;
-    setStatus("");
-    return;
-  }
+// Завантажити й показати обрану країну
+async function showCountry() {
+  if (!select.value) return;
 
   infoEl.hidden = true;
+  showButton.disabled = true;
   setStatus("Завантаження даних…", "loading");
 
   try {
-    const country = await getCountry(name);
+    const country = await getCountry(select.value);
     if (!country) throw new Error("Країну не знайдено");
     render(country);
     setStatus("");
   } catch (error) {
     setStatus("Помилка: " + error.message, "error");
+  } finally {
+    showButton.disabled = !select.value;
   }
 }
 
+// Початкове завантаження списку
 async function init() {
   setStatus("Завантаження переліку країн…", "loading");
-
   try {
     fillSelect(await getCountries());
     select.disabled = false;
+    showButton.disabled = false;
     setStatus("");
   } catch (error) {
     select.replaceChildren(new Option("Недоступно", ""));
@@ -140,5 +148,21 @@ async function init() {
   }
 }
 
-select.addEventListener("change", handleSelection);
+// Вибір країни одразу показує її дані
+select.addEventListener("change", () => {
+  if (select.value) {
+    showCountry();
+  } else {
+    infoEl.hidden = true;
+    setStatus("");
+  }
+});
+
+// Кнопка робить те саме (на випадок повторного натискання)
+form.addEventListener("submit", (event) => {
+  event.preventDefault();
+  if (!select.value) return setStatus("Оберіть країну зі списку");
+  showCountry();
+});
+
 init();

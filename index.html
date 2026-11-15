@@ -2,28 +2,69 @@
 <html lang="uk">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Лабораторна робота №4 — Country Information</title>
+
+  <!-- Шрифт Open Sans -->
+  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <main class="app">
-    <h1>Country Information</h1>
+  <main class="page">
+    <!-- Заголовок сторінки -->
+    <header class="hero">
+      <h1>Country Information</h1>
+      <p>Дізнайтеся більше про будь-яку країну світу.</p>
+    </header>
 
-    <select id="countrySelect" aria-label="Оберіть країну" disabled>
-      <option value="">Завантаження країн…</option>
-    </select>
+    <!-- Форма: спочатку обираємо країну, потім натискаємо кнопку -->
+    <form id="countryForm" class="controls">
+      <select id="countrySelect" aria-label="Країна" disabled>
+        <option value="">Завантаження країн…</option>
+      </select>
+      <button type="submit" id="showBtn" class="btn" disabled>
+        Показати інформацію
+      </button>
+    </form>
 
+    <!-- Повідомлення про стан: завантаження або помилка -->
     <p id="status" class="status" role="status" aria-live="polite"></p>
 
-    <section id="info" class="info" hidden>
-      <p class="row"><span>Країна:</span> <strong id="cName"></strong></p>
-      <p class="row"><span>Столиця:</span> <strong id="cCapital"></strong></p>
-      <p class="row"><span>Населення:</span> <strong id="cPopulation"></strong></p>
-      <p class="row"><span>Регіон:</span> <strong id="cRegion"></strong></p>
-      <p class="row"><span>Площа:</span> <strong id="cArea"></strong></p>
-      <p class="row"><span>Валюта:</span> <strong id="cCurrency"></strong></p>
-      <img id="cFlag" class="flag" alt="" hidden>
+    <!-- Блок з інформацією про обрану країну -->
+    <section id="info" class="results" hidden>
+      <h2>Інформація про країну</h2>
+
+      <div class="list">
+        <!-- Назва країни, регіон і прапор -->
+        <article class="item identity">
+          <img id="cFlag" class="flag" alt="" hidden>
+          <div class="identity-text">
+            <strong id="cName"></strong>
+            <span id="cRegion"></span>
+          </div>
+        </article>
+
+        <!-- Окремі факти про країну -->
+        <article class="item">
+          <span class="fact-label">Столиця</span>
+          <span class="fact-value" id="cCapital"></span>
+        </article>
+
+        <article class="item">
+          <span class="fact-label">Населення</span>
+          <span class="fact-value" id="cPopulation"></span>
+        </article>
+
+        <article class="item">
+          <span class="fact-label">Площа</span>
+          <span class="fact-value" id="cArea"></span>
+        </article>
+
+        <article class="item">
+          <span class="fact-label">Валюта</span>
+          <span class="fact-value" id="cCurrency"></span>
+        </article>
+      </div>
     </section>
   </main>
 
