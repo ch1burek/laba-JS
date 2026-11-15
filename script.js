@@ -1,7 +1,6 @@
 // Адреси API та резервного набору даних
 const API = "https://restcountries.com/v3.1";
-const DATA =
-  "https://cdn.jsdelivr.net/gh/restcountries/restcountries@master/src/main/resources/countriesV3.1.json";
+const DATA = "https://cdn.jsdelivr.net/gh/restcountries/restcountries@master/src/main/resources/countriesV3.1.json";
 const FIELDS = "name,capital,population,flags,region,area,currencies";
 
 // Елементи сторінки
@@ -40,9 +39,7 @@ function dataset() {
   if (!cache) {
     cache = getJSON(DATA)
       .then((data) => {
-        if (!Array.isArray(data) || !data.length) {
-          throw new Error("Порожній набір даних");
-        }
+        if (!Array.isArray(data) || !data.length) throw new Error("Порожній набір даних");
         return data;
       })
       .catch((error) => {
@@ -78,18 +75,12 @@ async function getCountry(name) {
 function render(country) {
   const name = country.name?.common || "—";
   out.name.textContent = name;
-  out.capital.textContent = country.capital?.length
-    ? country.capital.join(", ")
-    : "—";
+  out.capital.textContent = country.capital?.length ? country.capital.join(", ") : "—";
   out.population.textContent =
-    typeof country.population === "number"
-      ? country.population.toLocaleString("uk-UA")
-      : "—";
+    typeof country.population === "number" ? country.population.toLocaleString("uk-UA") : "—";
   out.region.textContent = country.region || "—";
   out.area.textContent =
-    typeof country.area === "number"
-      ? country.area.toLocaleString("uk-UA") + " км²"
-      : "—";
+    typeof country.area === "number" ? country.area.toLocaleString("uk-UA") + " км²" : "—";
   out.currency.textContent = country.currencies
     ? Object.values(country.currencies)
         .map((c) => c.name + (c.symbol ? ` (${c.symbol})` : ""))
@@ -114,9 +105,32 @@ function fillSelect(countries) {
   select.replaceChildren(new Option("Оберіть країну…", ""), ...options);
 }
 
-// Завантажити й показати обрану країну
-async function showCountry() {
-  if (!select.value) return;
+// Початкове завантаження списку
+async function init() {
+  setStatus("Завантаження переліку країн…", "loading");
+  try {
+    fillSelect(await getCountries());
+    select.disabled = false;
+    setStatus("");
+  } catch (error) {
+    select.replaceChildren(new Option("Недоступно", ""));
+    setStatus("Не вдалося завантажити перелік країн: " + error.message, "error");
+  }
+}
+
+// Вибір країни лише активує кнопку
+select.addEventListener("change", () => {
+  showButton.disabled = !select.value;
+  if (!select.value) {
+    infoEl.hidden = true;
+    setStatus("");
+  }
+});
+
+// Дані показуються після натискання кнопки
+form.addEventListener("submit", async (event) => {
+  event.preventDefault();
+  if (!select.value) return setStatus("Оберіть країну зі списку");
 
   infoEl.hidden = true;
   showButton.disabled = true;
@@ -132,37 +146,6 @@ async function showCountry() {
   } finally {
     showButton.disabled = !select.value;
   }
-}
-
-// Початкове завантаження списку
-async function init() {
-  setStatus("Завантаження переліку країн…", "loading");
-  try {
-    fillSelect(await getCountries());
-    select.disabled = false;
-    showButton.disabled = false;
-    setStatus("");
-  } catch (error) {
-    select.replaceChildren(new Option("Недоступно", ""));
-    setStatus("Не вдалося завантажити перелік країн: " + error.message, "error");
-  }
-}
-
-// Вибір країни одразу показує її дані
-select.addEventListener("change", () => {
-  if (select.value) {
-    showCountry();
-  } else {
-    infoEl.hidden = true;
-    setStatus("");
-  }
-});
-
-// Кнопка робить те саме (на випадок повторного натискання)
-form.addEventListener("submit", (event) => {
-  event.preventDefault();
-  if (!select.value) return setStatus("Оберіть країну зі списку");
-  showCountry();
 });
 
 init();
