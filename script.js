@@ -138,7 +138,7 @@ form.addEventListener("submit", async (event) => {
 
   try {
     const country = await getCountry(select.value);
-    if (!country) throw new Error("Країну не знайдено");
+    if (!country) throw new Error("Країну не було знайдено");
     render(country);
     setStatus("");
   } catch (error) {
