@@ -22,7 +22,7 @@ const out = {
 
 let cache = null;
 
-// Показати повідомлення (порожній текст очищає його)
+// Показати повідомлення(порожній текст очищає його)
 function setStatus(text, type = "info") {
   statusEl.textContent = text;
   statusEl.dataset.type = type;
